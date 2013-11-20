@@ -24,7 +24,7 @@ var saveDataTime = null;
 
 function initializePersistence() {
     var pulse_queue = null;
-    var pulse_version = "1.9";
+    var pulse_version = "2.0";
     var DO_BattleID;
     var DO_Country;
     var DO_Region;

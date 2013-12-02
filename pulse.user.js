@@ -1,20 +1,17 @@
 // ==UserScript==
-// @name           Pulse
-// @namespace      Alterpulse
-// @description    PULSEPROJECT - eRepublik Hungarian fight tracker ( E4H )
+// @name           Kanoc
+// @namespace      pulse
+// @description    Gabor Aron Tuzerei katonai szamara irt kiegeszito az ellatmanyozas megkonnyitesere
 // @author         karaj22
-// @contributor    laYer, sugarfree, Xavinyo, frimen
+// @contributor    Xavinyo
 // @run-at         document-end
-// @homepage       http://gatmax.info
-// @icon           http://gatmax.info/img/e4h_icon.jpg
-// @version        2.0
+// @homepage       http://gat.kelengye.hu
+// @version        1.0
 // @include        /^https?://www\.erepublik\.com/\w{2}$/
-// @include        /^https?://www\.erepublik\.com/\w{2}\?viewPost=\d+$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/military/battlefield/\d+$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/main/pvp/.+$/
-// @include        /^https?://www\.erepublik\.com/\w{2}/citizen/profile/\d+$/
-// @updateURL	     http://gatmax.info/pulse/pulse.meta.js
-// @downloadURL    http://gatmax.info/pulse/pulse.user.js
+// @updateURL	   http://gat.kelengye.hu/pulse/kanoc.meta.js
+// @downloadURL    http://gat.kelengye.hu/pulse/kanoc.user.js
 // ==/UserScript==
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,11 +21,7 @@ var saveDataTime = null;
 
 function initializePersistence() {
     var pulse_queue = null;
-    var pulse_version = "2.0";
-    var DO_BattleID;
-    var DO_Country;
-    var DO_Region;
-    var DO_SAVE;
+    var pulse_version = "1.0";
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,62 +81,6 @@ function initializePersistence() {
         try {
             database.setItem(key, prepareForStorage(value));
         } catch (ex) {}
-    }
-
-    var DO_armyID = storageGet("pulse-armyid");
-
-    function saveDo() {
-        var ts = new Date().getTime();
-
-        storageSet("pulse-doBattleID", DO_BattleID);
-        storageSet("pulse-doCountry", DO_Country);
-        storageSet("pulse-doRegion", DO_Region);
-        storageSet("pulse-doSave", ts);
-	}
-
-    function updateDo() {
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: "http://www.erepublik.com/en",
-            dataType: "html",
-            onload: function (e) {
-				if (e.responseText == null) {
-					return;
-				}
-			    var arr = e.responseText.match(/var mapDailyOrder \=([^;]*);/);
-                var mapDO = JSON.parse(arr[1]);
-
-                DO_BattleID = mapDO['do_battle_id'];
-                DO_Country = mapDO['do_for_country'];
-                DO_Region = mapDO['do_region_name'];
-	            saveDo();
-            }
-        })
-    }
-
-    if (unsafeWindow.mapDailyOrder) {
-		DO_BattleID = unsafeWindow.mapDailyOrder['do_battle_id'];
-		DO_Country = unsafeWindow.mapDailyOrder['do_for_country'];
-		DO_Region = unsafeWindow.mapDailyOrder['do_region_name'];
-		saveDo();
-    } else {
-        var b = false;
-        var ts = new Date().getTime();
-        var ts2 = storageGet("pulse-doSave");
-
-        if (ts2 == null) {
-            b = true;
-        } else if (ts - ts2 > 3600000) {
-            b = true;
-        }
-        if (b == true) {
-			updateDo();
-		} else {
-            DO_BattleID = storageGet("pulse-doBattleID");
-            DO_Country = storageGet("pulse-doCountry");
-            DO_Region = storageGet("pulse-doRegion");
-            DO_SAVE = storageGet("pulse-doSave");
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,187 +259,6 @@ function initializePersistence() {
     }
 
 
-    function showAll() {
-        $("#pulse_section_data").slideDown('fast');
-    }
-
-    function hideAll(animate) {
-        if (animate == true) {
-            $("#pulse_section_data").slideUp('slow');
-        } else {
-            $("#pulse_section_data").hide();
-        }
-    }
-
-
-    function showPromo() {
-        $(".off30gold").slideDown('fast');
-        $(".banner_place").slideDown('fast');
-        $(".pop_starter_pack").slideDown('fast');
-        $(".christmas_promotions").slideDown('fast');
-        $(".more-gold-50-half").slideDown('fast');
-        //$(".new_banners_wrapper").slideDown('fast');
-        $(".sidebar-bottom-banner").slideDown('fast');
-        $(".sidebar_banners_area").slideDown('fast');
-        $("#mapContainer").slideDown('fast');
-        $("#sidebar_missions").slideDown('fast');
-        $(".promo_holder").slideDown('fast');
-    }
-
-    function hidePromo(animate) {
-        if (animate == true) {
-            $(".off30gold").slideUp('fast');
-            $(".banner_place").slideUp('fast');
-            $(".pop_starter_pack").slideUp('fast');
-            $(".christmas_promotions").slideUp('fast');
-            $(".more-gold-50-half").slideUp('fast');
-            //$(".new_banners_wrapper").slideUp('fast');
-            $(".sidebar-bottom-banner").slideUp('fast');
-            $(".sidebar_banners_area").slideUp('fast');
-            $("#mapContainer").slideUp('fast');
-            $("#sidebar_missions").slideUp('fast');
-            $(".promo_holder").slideUp('fast');
-        } else {
-            $(".off30gold").hide();
-            $(".banner_place").hide();
-            $(".pop_starter_pack").hide();
-            $(".christmas_promotions").hide();
-            $(".more-gold-50-half").hide();
-            //$(".new_banners_wrapper").hide();
-            $(".sidebar-bottom-banner").hide();
-            $(".sidebar_banners_area").hide();
-            $("#mapContainer").hide();
-            $("#sidebar_missions").hide();
-            $(".fb_like").remove();
-            $(".promo_holder").remove();
-        }
-    }
-
-    function showBox() {
-        $("#info_box_army").slideDown('fast');
-    }
-
-    function hideBox(animate) {
-        if (animate == true) {
-            $("#info_box_army").slideUp('fast');
-        } else {
-            $("#info_box_army").hide();
-        }
-    }
-
-    function showMedia() {
-        var holder3 = "<span id='latest_armyk'><h1 style='clear:left' class='noborder'>Legfrissebb cikkek</h1><iframe class='media_widget' ";
-        holder3 += "marginwidth=0 marginheight=0 align=middle src=http://www.gatmax.info/news.php width=450 height=280 scrolling=no frameborder=0></iframe></span>";
-        if ($('#mission_reward').length) {
-            $("#battle_listing").after(holder3);
-        }
-        $("#latest_armyk").slideDown('fast');
-    }
-
-    function hideMedia(animate) {
-        if (animate == true) {
-            $("#latest_armyk").slideUp('fast');
-        } else {
-            $("#latest_armyk").hide();
-        }
-    }
-
-    function showShout() {
-        var spambutton = "<div class='previous_posts' id='shout_extra' style='display: block;'><input type='hidden' id='previous_posts' name='next' value='2'><input type='hidden' name='viewFirst' id='viewFirst' value='0'><input type='hidden' value='9809' id='posts_count' name='posts_count'><a href='javascript:;' title='Older posts' class='blue_arrow_down_medium' trigger='previous_posts'><span id='citizen_older_feeds2' trigger='previous_posts'>Régi hozzászólások</span></a>";
-        spambutton += "<a href='javascript:;' title='Auto shout cleaner' class='blue_arrow_down_medium'><span id='clean_button'>Tüntessed el az automata shoutokat</span></a></div>";
-
-        if ($(".shouter").length > 0) {
-            $("#citizen_older_feeds").remove();
-            $(".shouter").after(spambutton);
-        }
-
-        $("#clean_button").live("click", function () {
-            $("li.wall_post > div > p > em.auto_text").parent().parent().parent().remove();
-        });
-        
-        $('.wall_post').each(function(index){
-        if(!$(this).attr('hasLink')) {
-        	var id = $(this).attr('id').replace('post_', '');
-        	$(this).find('.post_actions')
-        		.append(' <span>·</span> ')
-        		.append('<a href="http://www.erepublik.com/en?viewPost=' + id + '">Link</a>');
-            $(this).attr('hasLink', true);
-        }
-    	});
-    }
-
-    function hideShout() {
-        if ($("#clean_button").length > 0) {
-            $("#shout_extra").remove();
-            var older_button = "<div class='previous_posts' id='citizen_older_feeds' style='display: none;'><input type='hidden' id='previous_posts' name='next' value='1'><input type='hidden' name='viewFirst' id='viewFirst' value='0'><input type='hidden' value='1024' id='posts_count' name='posts_count'><a href='javascript:;' title='Older posts' class='blue_arrow_down_medium' trigger='previous_posts'><span trigger='previous_posts'>Older posts</span></a></div>";
-            $(".inner").after(older_button);
-        }
-    }
-
-    function showDamage() {
-        if (($('#pvp').length > 0) || ($('#achievment').length > 0) || ($('#military_group_header').length > 0) || ($('#newspaper_id').length > 0) || ($('#defender_allies').length > 0) || ($('#filters').length > 0)) {
-            var sebzes_header_style = "background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;width:51px;float: left;font-size: 11px;font-weight: bold;height: 20px;line-height: 20px;opacity: 0.7;padding: 0 0px;text-shadow: 0 1px 1px #333333;margin-top: 5px;";
-            var sebzes_style = "color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:65px;height:20px;font-size:11px;line-height:20px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right;margin-top: 5px;";
-            var utes_header_style = "background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;width:50px;float: left;font-size: 11px;font-weight: bold;height: 20px;line-height: 20px;opacity: 0.7;padding: 0 1px;text-shadow: 0 1px 1px #333333;";
-            var utes_style = "color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:65px;height:20px;font-size:11px;line-height:20px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right;";
-
-            $("#pulse_today_header").attr("style", sebzes_header_style);
-            $("#pulse_today").attr("style", sebzes_style);
-            $("#pulse_today_hits_header").attr("style", utes_header_style);
-            $("#pulse_today_hits").attr("style", utes_style);
-            $("#today_info_link").remove();
-
-            $("#pulse_today_1_header").attr("style", sebzes_header_style);
-            $("#pulse_today_1").attr("style", sebzes_style);
-            $("#pulse_today_hits_1_header").attr("style", utes_header_style);
-            $("#pulse_today_hits_1").attr("style", utes_style);
-            $("#today_1_info_link").remove();
-
-            $("#pulse_today_2_header").attr("style", sebzes_header_style);
-            $("#pulse_today_2").attr("style", sebzes_style);
-            $("#pulse_today_hits_2_header").attr("style", utes_header_style);
-            $("#pulse_today_hits_2").attr("style", utes_style);
-            $("#today_2_info_link").remove();
-        }
-        $("#pulse_daily_damage").slideDown('fast');
-    }
-
-    function hideDamage(animate) {
-        if (animate == true) {
-            $("#pulse_daily_damage").slideUp('fast');
-        } else {
-            $("#pulse_daily_damage").hide();
-        }
-    }
-
-
-    function showBattleOrders() {
-        var holder2 = "<span id='battleorders_armyk'><h1 style='clear:left' class='noborder'>Napiparancs</h1><iframe class='media_widget' ";
-        holder2 += "marginwidth=0 marginheight=0 align=middle src=http://www.gatmax.info/bolist.php width=450 scrolling=no frameborder=0></iframe></span>";
-
-        if ($('#orderContainer').length) {
-            $("#orderContainer").after(holder2);
-        } else if ($('#pvp').length) {
-            $("#pvp").after(holder2);
-        } else if ($('.bbcode').length) {
-            $(".bbcode").after(holder2);
-        } else if ($('.listing resistance').length) {
-            $(".listing resistance").after(holder2);
-        } else if ($('#battle_listing').length) {
-            $("#battle_listing").after(holder2);
-        }
-        $("#battleorders_armyk").slideDown('fast');
-    }
-
-    function hideBattleOrders(animate) {
-        if (animate == true) {
-            $("#battleorders_armyk").slideUp('fast');
-        } else {
-            $("#battleorders_armyk").hide();
-        }
-
-    }
-
     function setPlayerData(data) {
         if (data == null || data == undefined || data == 'undefined') {
             return;
@@ -525,47 +281,6 @@ function initializePersistence() {
             hideAll(false);
         } else {
             showAll();
-        }
-    }
-
-
-    function addDamage() {
-        if (getShowDamage() == false) {
-            hideDamage(false);
-        } else {
-            showDamage();
-        }
-    }
-
-    function addBox() {
-        if (getShowBox() == false) {
-            hideBox(false);
-        } else {
-            showBox();
-        }
-    }
-
-    function addPromo() {
-        if (getShowPromo() == false) {
-            hidePromo(false);
-        } else {
-            showPromo();
-        }
-    }
-
-    function addMedia() {
-        if (getShowMedia() == false) {
-            hideMedia(false);
-        } else {
-            showMedia();
-        }
-    }
-
-    function addBattleOrders() {
-        if (getShowBattleOrders() == false) {
-            hideBattleOrders(false);
-        } else {
-            showBattleOrders();
         }
     }
 
@@ -592,11 +307,6 @@ function initializePersistence() {
         }
     }
 
-    function addShoutWall() {
-        if (getShowShout() == true) {
-            showShout();
-        }
-    }
 
 /*
  * QUEUE BASZÁS
@@ -722,130 +432,12 @@ function initializePersistence() {
         var pulse_section_header = "<div id='pulse_section_header'>";
         pulse_section_header += "<a id='all_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Verzió: <font color='red'>" + pulse_version + "</font></span><a/>";
         pulse_section_header += "<a target='_blank' href='http://www.erepublik.com/en/newspaper/hadugyi-kozlony-177586/1' class='f_light_blue_new'><span style='color: red; font-size: 10pt;'>HK</span><a/>";
-        pulse_section_header += "<a target='_blank' href='http://www.gatmax.info/?p=stat&soldier=" + citizen_id + "' class='f_light_blue_new'><span style='color: green; font-size: 10pt;'>E4H</span></a>";
-        pulse_section_header += "<a id='damage_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Mini infók</span><a/>";
+        pulse_section_header += "<a target='_blank' href='http://gat.kelengye.hu' class='f_light_blue_new'><span style='color: green; font-size: 10pt;'>Kanóc</span></a>";
         pulse_section_header += "</div>";
 
-        var pulse_section_data = "<div id='pulse_section_data' >";
-
-        pulse_section_data += "<span id='info_box_army'><iframe marginwidth=0 marginheight=0 frameborder=0 style='padding: 0px; margin-top: 0px; margin-bottom: 0px;' align=middle src='http://www.gatmax.info/bolist_unit.php?unit=" + army_id + "' width=150 height=140 scrolling=no frameborder=0></iframe></span>";
-
-        pulse_section_data += "<a id='box_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Infobox</span><a/>";
-        pulse_section_data += "<a id='latest_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Friss cikkek</span><a/>";
-        pulse_section_data += "<a id='promo_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Missziók,akciók</span><a/>";
-        pulse_section_data += "<a id='shout_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Shoutfal</span><a/>";
-        pulse_section_data += "<a id='battleorders_show' href='javascript:;' class='f_light_blue_new'><span style='font-size: 10pt;'>Napiparancs</span><a/>";
-        pulse_section_data += "</div>";
-
-        var today = parseInt($(".eday strong").text().replace(/,/g, ""));
-        var prev_day = today - 1;
-        var prev2_day = prev_day - 1;
-
-        var today_info = "<div id='today_info' style='clear: both; margin-bottom: 3px; margin-top: 3px;'>";
-        today_info += "<a id='today_info_link' target='_blank' href='http://www.gatmax.info/?p=stat&soldier=" + citizen_id + "&day=" + today + "' style='font-size: 10pt; color: red; float: left; padding:5px 5px;'>" + today + "</a>";
-        today_info += "<small id='pulse_today_header' style='background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;float: left;font-size: 11px;font-weight: bold;height: 25px;line-height: 25px;opacity: 0.7;padding: 0 5px;text-shadow: 0 1px 1px #333333;'>Sebzés: </small>";
-        today_info += "<div id='pulse_today' style='color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:65px;height:25px;font-size:12px;line-height:25px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right'>" + "" + "</div>";
-        today_info += "<small id='pulse_today_hits_header' style='background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;float: left;font-size: 11px;font-weight: bold;height: 25px;line-height: 25px;opacity: 0.7;padding: 0 5px;text-shadow: 0 1px 1px #333333;'>Ütések: </small>";
-        today_info += "<div id='pulse_today_hits' style='color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:25px;height:25px;font-size:12px;line-height:25px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right'>" + "" + "</div>";
-        today_info += "</div>";
-
-        var today_1_info = "<div id='today_1_info' style='clear: both; margin-bottom: 3px; margin-top: 3px;'>";
-        today_1_info += "<a id='today_1_info_link' target='_blank' href='http://www.gatmax.info/?p=stat&soldier=" + citizen_id + "&day=" + prev_day + "' style='font-size: 10pt; color: red; float: left; padding:5px 5px;'>" + prev_day + "</a>";
-        today_1_info += "<small id ='pulse_today_1_header' style='background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;float: left;font-size: 11px;font-weight: bold;height: 25px;line-height: 25px;opacity: 0.7;padding: 0 5px;text-shadow: 0 1px 1px #333333;'>Sebzés: </small>";
-        today_1_info += "<div id='pulse_today_1' style='color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:65px;height:25px;font-size:12px;line-height:25px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right'>" + "" + "</div>";
-        today_1_info += "<small id='pulse_today_hits_1_header' style='background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;float: left;font-size: 11px;font-weight: bold;height: 25px;line-height: 25px;opacity: 0.7;padding: 0 5px;text-shadow: 0 1px 1px #333333;'>Ütések: </small>";
-        today_1_info += "<div id='pulse_today_hits_1' style='color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:25px;height:25px;font-size:12px;line-height:25px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right'>" + "" + "</div>";
-        today_1_info += "</div>";
-
-        var today_2_info = "<div id='today_2_info' style='clear: both; margin-bottom: 3px; margin-top: 3px;'>";
-        today_2_info += "<a id='today_2_info_link' target='_blank' href='http://www.gatmax.info/?p=stat&soldier=" + citizen_id + "&day=" + prev2_day + "' style='font-size: 10pt; color: red; float: left; padding:5px 5px;'>" + prev2_day + "</a>";
-        today_2_info += "<small id='pulse_today_2_header' style='background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;float: left;font-size: 11px;font-weight: bold;height: 25px;line-height: 25px;opacity: 0.7;padding: 0 5px;text-shadow: 0 1px 1px #333333;'>Sebzés: </small>";
-        today_2_info += "<div id='pulse_today_2' style='color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:65px;height:25px;font-size:12px;line-height:25px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right'>" + "" + "</div>";
-        today_2_info += "<small id='pulse_today_hits_2_header' style='background-image: url(\"/images/modules/pvp/influence_left.png?1309432605\");background-position: left center;color: #FFFFFF;display: block;float: left;font-size: 11px;font-weight: bold;height: 25px;line-height: 25px;opacity: 0.7;padding: 0 5px;text-shadow: 0 1px 1px #333333;'>Ütések: </small>";
-        today_2_info += "<div id='pulse_today_hits_2' style='color:#fff;text-shadow:#014471 0px 1px 0px;float:left;display:block;width:25px;height:25px;font-size:12px;line-height:25px;padding:0 5px;background-image:url(\"/images/modules/pvp/influence_right.png?1309432605\");background-position:right'>" + "" + "</div>";
-        today_2_info += "</div>";
-
-        var daily_damage_section = "<div style='margin-left: 6px; margin-right: 6px;' id='pulse_daily_damage'>";
-        daily_damage_section += "<div>" + today_info + "</div>";
-        daily_damage_section += "<div>" + today_1_info + "</div>";
-        daily_damage_section += "<div>" + today_2_info + "</div>";
-        daily_damage_section += "</div>";
-
-        $("#all_show").live("click", function () {
-            if (getShowAll() == false) {
-                setShowAll(true);
-                showAll();
-            } else {
-                setShowAll(false);
-                hideAll(true);
-            }
-        });
-
-        $("#box_show").live("click", function () {
-            if (getShowBox() == false) {
-                setShowBox(true);
-                showBox();
-            } else {
-                setShowBox(false);
-                hideBox(true);
-            }
-        });
-
-
-        $("#damage_show").live("click", function () {
-            if (getShowDamage() == false) {
-                setShowDamage(true);
-                showDamage();
-            } else {
-                setShowDamage(false);
-                hideDamage(true);
-            }
-        });
-
-
-        $("#promo_show").live("click", function () {
-            if (getShowPromo() == false) {
-                setShowPromo(true);
-                showPromo();
-            } else {
-                setShowPromo(false);
-                hidePromo(true);
-            }
-        });
-
-        $("#latest_show").live("click", function () {
-            if (getShowMedia() == false) {
-                setShowMedia(true);
-                showMedia();
-            } else {
-                setShowMedia(false);
-                hideMedia(true);
-            }
-        });
-
-        $("#shout_show").live("click", function () {
-            if (getShowShout() == false) {
-                setShowShout(true);
-                showShout();
-            } else {
-                setShowShout(false);
-                hideShout();
-            }
-        });
-
-
-        $("#battleorders_show").live("click", function () {
-            if (getShowBattleOrders() == false) {
-                setShowBattleOrders(true);
-                showBattleOrders();
-            } else {
-                setShowBattleOrders(false);
-                hideBattleOrders(true);
-            }
-        });
 
 /*
- * QUEUE baszÃ¡s
+ * QUEUE baszás
  */
         var queue_info = "<div id='pulse_queue' title='Az elküldetlen killek száma. Nyomd meg a \"Start\" gombot, és elküldi egyesével a szervernek.' style='display: block;'>";
         queue_info += "<div style='float: left;'>Puffer hossz:&nbsp;</div><div id='pulse_queue_length' style='float: left;'></div>";
@@ -860,7 +452,7 @@ function initializePersistence() {
 ////////// QUEUE
 
         var pulse_section = "<div class='pulse_section user_section' id='pulse_section_body'>";
-        pulse_section += pulse_section_header + pulse_section_data + daily_damage_section + queue_info +"</div>";
+        pulse_section += pulse_section_header + queue_info +"</div>";
 
         if ($("#battle_listing").length > 0) {
             $("#battle_listing").after(pulse_section);
@@ -876,18 +468,7 @@ function initializePersistence() {
         } catch (err) {}
 
         try {
-            renderPulseButton(citizen_id);
-        } catch (err) {}
-
-        try {
-            addAll();
-            addDamage();
-            addBox();
-            addPromo();
-            addMedia();
             addCountryAlliance();
-            addBattleOrders();
-            addShoutWall();
         } catch (err) {}
 
         $("div.user_notify > a[href*=jobs]").css("bottom", "-350px");
@@ -899,19 +480,6 @@ function initializePersistence() {
     }
 
     ////////////////////////////////////
-
-    function renderPulseButton(citizen_id) {
-        var link_pulse_button = "http://www.egov4you.info/citizen/overview/";
-        var title_pulse_button = "View your fight stats";
-        var img_pulse_button = "http://img231.imageshack.us/img231/7091/pulsebutton80white65.png";
-        $("#pvp").append(pulse_button);
-        var go_enemy_defeated_visible = $(".go_enemy_defeated").is(":visible");
-        if (go_enemy_defeated_visible) {
-            $(".pulse_button").attr("style", "background-image: url('" + img_pulse_button + "');background-position: 0 0;background-repeat: no-repeat;bottom: 7px;display: block;height: 46px;position: absolute;right: 85px;text-indent: -9999px;width: 45px;");
-        } else {
-            $(".pulse_button").attr("style", "background-image: url('" + img_pulse_button + "');background-position: 0 0;background-repeat: no-repeat;bottom: 7px;display: block;height: 46px;position: absolute;right: 47px;text-indent: -9999px;width: 45px;");
-        }
-    }
 
     function renderWeaponDamage() {
         var strength = $("#fighter_skill").text();
@@ -993,9 +561,6 @@ function initializePersistence() {
 
     function renderProfileInfluence() {
 
-        var divxp = parseInt($("#content .citizen_experience .citizen_level").text());
-        var divimg = "<img src='http://gatmax.info/img/div/" + GetDivision(divxp) + ".png'  width=30 height=30  border=0 alt='Divizio'>";
-        $("#content .citizen_presence").after(divimg);
         var citizen_content = $(".citizen_content");
         if (citizen_content.length == 0) {
             return;
@@ -1086,33 +651,6 @@ function initializePersistence() {
         return today;
     }
 
-    function getTodayHits(day) {
-        var today = storageGet("pulse-hits-" + day);
-        if (today == null || today == undefined || today == "undefined") {
-            return 0;
-        }
-
-        return today;
-    }
-
-    function addToday(day, influence) {
-        var today = storageGet("pulse-" + day);
-        if (today == null || today == undefined || today == "undefined") {
-            today = 0;
-        }
-        today += influence;
-        storageSet("pulse-" + day, today);
-    }
-
-    function addTodayHits(day, hits) {
-        var today = storageGet("pulse-hits-" + day);
-        if (today == null || today == undefined || today == "undefined") {
-            today = 0;
-        }
-        today += hits;
-        storageSet("pulse-hits-" + day, today);
-    }
-
     function getCountryStats() {
         var cstats = storageGet("pulse-countrystats");
         if (cstats == null || cstats == undefined || cstats == "undefined") {
@@ -1130,24 +668,6 @@ function initializePersistence() {
         storageSet("pulse-countrystats", cstats);
     }
 
-
-    function setShowBattleOrders(b) {
-        if (b == null || b == undefined || b == "undefined") {
-            return;
-        }
-
-        storageSet("pulse-battleorders-show", b);
-    }
-
-    function getShowBattleOrders() {
-        var b = storageGet("pulse-battleorders-show");
-        if (b == null || b == undefined || b == "undefined") {
-            return true;
-        }
-
-        return b;
-    }
-
     function setShowAll(b) {
         if (b == null || b == undefined || b == "undefined") {
             return;
@@ -1158,91 +678,6 @@ function initializePersistence() {
 
     function getShowAll() {
         var b = storageGet("pulse-box-all");
-        if (b == null || b == undefined || b == "undefined") {
-            return false;
-        }
-
-        return b;
-    }
-
-
-    function setShowBox(b) {
-        if (b == null || b == undefined || b == "undefined") {
-            return;
-        }
-
-        storageSet("pulse-box-show", b);
-    }
-
-    function getShowBox() {
-        var b = storageGet("pulse-box-show");
-        if (b == null || b == undefined || b == "undefined") {
-            return false;
-        }
-
-        return b;
-    }
-
-    function setShowDamage(b) {
-        if (b == null || b == undefined || b == "undefined") {
-            return;
-        }
-
-        storageSet("pulse-damage-show", b);
-    }
-
-    function getShowDamage() {
-        var b = storageGet("pulse-damage-show");
-        if (b == null || b == undefined || b == "undefined") {
-            return false;
-        }
-
-        return b;
-    }
-
-
-    function setShowPromo(b) {
-        if (b == null || b == undefined || b == "undefined") {
-            return;
-        }
-
-        storageSet("pulse-promo-show", b);
-    }
-
-    function getShowPromo() {
-        var b = storageGet("pulse-promo-show");
-        if (b == null || b == undefined || b == "undefined") {
-            return false;
-        }
-
-        return b;
-    }
-
-    function setShowMedia(b) {
-        if (b == null || b == undefined || b == "undefined") {
-            return;
-        }
-        storageSet("pulse-latest-show", b);
-    }
-
-    function getShowMedia() {
-        var b = storageGet("pulse-latest-show");
-        if (b == null || b == undefined || b == "undefined") {
-            return false;
-        }
-
-        return b;
-    }
-
-    function setShowShout(b) {
-        if (b == null || b == undefined || b == "undefined") {
-            return;
-        }
-        storageSet("pulse-shout-show", b);
-    }
-
-    function getShowShout() {
-        var b = storageGet("pulse-shout-show");
         if (b == null || b == undefined || b == "undefined") {
             return false;
         }
@@ -1336,26 +771,10 @@ function initializePersistence() {
         return x1 + x2;
     }
 
-    function updateTodayOffsetInfo(offset) {
-        var eday = $(".eday strong").text();
-
-        var newday = parseInt(eday.replace(",", "")) - offset;
-
-        $("#pulse_today_" + offset).text(getToday(addCommas(newday)));
-        $("#pulse_today_hits_" + offset).text(getTodayHits(addCommas(newday)));
-    }
-
-
-    function updateTodayInfo() {
-        var eday = $(".eday strong").text();
-        $("#pulse_today").text(getToday(eday));
-        $("#pulse_today_hits").text(getTodayHits(eday));
-    }
-
     var sent_query_data;
 
     function sendData(query_data) {
-        var url = "http://gatmax.sinkovicz.hu/pulse.php";
+        var url = "http://gat.kelengye.hu/pulse/pulse.php";
 
         sent_query_data = query_data;
 
@@ -1511,61 +930,6 @@ function initializePersistence() {
         }
     }
 
-
-
-    function addEgovLinks() {
-        var groupimg = "http://www.gatmax.info/img/egov_icon.png";
-        var medalimg = "http://www.gatmax.info/img/medal_icon.png";
-        var okmimg = "http://www.gatmax.info/img/okm.jpg";
-        var obj_activity = $(".citizen_sidebar .citizen_activity").first();
-        if (obj_activity != undefined && obj_activity != null && obj_activity != 'undefined') {
-
-            var arr_places = obj_activity.find(".place");
-            if (arr_places.length > 1) {
-                var place = $(arr_places[1]).find(".one_newspaper").first();
-
-                var link = place.find("a").first();
-                var linkParts = $(link).attr("href").trim().split("/");
-
-                var groupId = linkParts[linkParts.length - 1];
-                var grouplink = "http://egov4you.info/unit/overview/" + groupId;
-
-                var srcCitizenId = $(".action_message").attr("href").trim();
-                var srcCitizenIdlinkParts = srcCitizenId.trim().split("/");
-                var PCitizenId = srcCitizenIdlinkParts[srcCitizenIdlinkParts.length - 1];
-
-                var citienlink = "http://egov4you.info/citizen/history/" + PCitizenId;
-                var citienlink2 = "http://battle-watcher.com/medals/citizen/" + PCitizenId;
-                var citienlink3 = "http://www.gatmax.info/?p=stat&soldier=" + PCitizenId;
-
-                var html = "<div style='margin-top: 4px; margin-bottom: 0px; height: 16px; padding-bottom: 1px; padding-top: 1px; width: 141px; border-top: 1px dotted #dddddd;'>";
-                html += "<a title='Open army stats in egov4you' style='padding: 0px; margin: 0px; width: 141px;' href='" + grouplink + "' target='blank'>";
-                html += "<img style='margin-top: 4px; border: 0px;' width='16' height='16' src='" + groupimg + "' />";
-                html += "<span style='margin-top: -2px;'>E4Y MU STAT</span>";
-                html += "</a>";
-                html += "</div>";
-                html += "<div style='margin-top: 4px; margin-bottom: 0px; height: 16px; padding-bottom: 1px; padding-top: 1px; width: 141px; border-top: 1px dotted #dddddd;'>";
-                html += "<a title='Open citizen stats in BattleWacher' style='padding: 0px; margin: 0px; width: 141px;' href='" + citienlink2 + "' target='blank'>";
-                html += "<img style='margin-top: 4px; border: 0px;' width='16' height='16' src='" + medalimg + "' />";
-                html += "<span style='margin-top: -2px;'>Med&aacute;l figyel&otilde;</span>";
-                html += "</a>";
-                html += "</div>";
-                html += "<div style='margin-top: 4px; margin-bottom: 0px; height: 16px; padding-bottom: 1px; padding-top: 1px; width: 141px; border-top: 1px dotted #dddddd;'>";
-                html += "<a title='Magyar Osszesitoi adatok' style='padding: 0px; margin: 0px; width: 141px;' href='" + citienlink3 + "' target='blank'>";
-                html += "<img style='margin-top: 4px; border: 0px;' width='16' height='16' src='" + okmimg + "' />";
-                html += "<span style='margin-top: -2px;'>E4H adatok</span>";
-                html += "</a>";
-                html += "</div></div>";
-                place.append(html);
-            }
-        }
-    }
-
-
-    function goToProfile() {
-        document.location = "http://www.erepublik.com" + $(".user_info a:first").attr('href');
-    }
-
     /******************************************************************/
     /******************************************************************/
 
@@ -1608,10 +972,6 @@ function initializePersistence() {
                 citizenshipId = getDOMCitizenshipId();
                 setCitizenshipId(citizenshipId);
             } else {}
-        } catch (err) {}
-
-        try {
-            addEgovLinks();
         } catch (err) {}
 
         try {
@@ -1764,24 +1124,12 @@ function initializePersistence() {
                     query += "&round=" + round + "&attRounds=" + att_rounds + "&defRounds=" + def_rounds;
                     query += "&version=" + pulse_version;
                     query += "&ts=" + timestamp;
-                    query += "&DOarmyID=" + DO_armyID;
-                    query += "&DOBattleID=" + DO_BattleID;
-                    query += "&DOCountry=" + DO_Country;
-                    query += "&DORegion=" + DO_Region;
 
 //////////////////////////////////////////////
 //unsafeWindow.console.log("query = " + query);
 //////////////////////////////////////////////
 
                     sendData(query);
-                    var totalGivenDamage = givenDamage;
-                    if (enemyIsNatural)
-                        totalGivenDamage += Math.floor(givenDamage * 0.1);
-                    try {
-                        addToday(eday, totalGivenDamage);
-                        addTodayHits(eday, earnedXp);
-                        updateTodayInfo();
-                    } catch (err) {}
                 }
 
             } else if (settings.url.match(/military\/change-weapon/) != null) {
@@ -1857,7 +1205,7 @@ function initializePersistence() {
         }
 
         function sendPVPData() {
-/////////// Ezek a vÃ¡ltozÃ³k Ã­gy maradnak
+/////////// Ezek a változások így maradnak
             var instantKill = 0;
             var countWeapons = 0;
             var weaponDamage = 99999;
@@ -1866,8 +1214,8 @@ function initializePersistence() {
             var enemyIsNatural = 0;
 
 
-/////////// Mentett vÃ¡ltozÃ³k
-            // az utolsÃ³ Ã¼tÃ©s mentett responseTextjÃ©bÅ‘l
+/////////// Mentett változók
+            // az utolsó ütés mentett responseTextjéből
             var jresp = storageGet("pulse-lastJresp");
 			if (jresp) {
                 var rank = jresp.rank.points;
@@ -1909,7 +1257,7 @@ function initializePersistence() {
                 isResistance = BSD.isResistance;
             }
 
-//////////// Ezek a vÃ¡ltozÃ³k kinyerhetÅ‘k az oldalbÃ³l
+//////////// Ezek a változók kinyerhetők az oldalból
             var ErpkPvp = unsafeWindow.ErpkPvp;
             var givenDamage = ErpkPvp.user_data.influence || 0;
             var winnerId = ErpkPvp.info_display_data.match_winner || 0;
@@ -1966,26 +1314,12 @@ function initializePersistence() {
             query += "&ts=" + timestamp;
             query += "&winnerId=" + winnerId;
             query += "&userDamage=" + userDamage + "&enemyDamage=" + enemyDamage;
-            query += "&DOarmyID=" + DO_armyID;
-            query += "&DOBattleID=" + DO_BattleID;
-            query += "&DOCountry=" + DO_Country;
-            query += "&DORegion=" + DO_Region;
 
 //////////////////////////////////////////////
 //unsafeWindow.console.log("query = " + query);
 //////////////////////////////////////////////
 
             sendData(query, false);
-
-            var totalGivenDamage = givenDamage;
-            if (enemyIsNatural) {
-                totalGivenDamage += Math.floor(givenDamage * 0.1);
-            }
-            try {
-                addToday(eday, totalGivenDamage);
-                addTodayHits(eday, earnedXp);
-                updateTodayInfo();
-            } catch (err) {}
         }
 
 
@@ -2032,15 +1366,6 @@ function initializePersistence() {
 
             }
         })();
-
-        try {
-            updateTodayInfo();
-            updateTodayOffsetInfo(1);
-            updateTodayOffsetInfo(2);
-
-        } catch (err) {}
-
-
 
         try {
             var curl = location.href;

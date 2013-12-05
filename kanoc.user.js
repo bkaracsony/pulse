@@ -112,7 +112,7 @@ function initializePersistence() {
         newBlue = blue.innerHTML;
         newBlue = newBlue.replace("%", "");
 
-        if (newBlue > 53) {
+        if (newBlue > 55) {
 
             blue.style.opacity = "1";
             blue.style.color = "#ff3300";
@@ -264,7 +264,6 @@ function initializePersistence() {
 
 ////////////////////////////////////////////
 //// Daily Order lekérdezés ////////////////
-    var DO_armyID = storageGet("pulse-armyid");
 
     function saveDo() {
         var ts = new Date().getTime();
@@ -273,13 +272,59 @@ function initializePersistence() {
         storageSet("pulse-doCountry", DO_Country);
         storageSet("pulse-doRegion", DO_Region);
         storageSet("pulse-doSave", ts);
-        }
+    }
+    
+    function updateDo() {
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: "http://www.erepublik.com/en",
+            dataType: "html",
+            onload: function (e) {
+                                if (e.responseText == null) {
+                                        return;
+                                }
+                            var arr = e.responseText.match(/var mapDailyOrder \=([^;]*);/);
+                var mapDO = JSON.parse(arr[1]);
+
+                DO_BattleID = mapDO['do_battle_id'];
+                DO_Country = mapDO['do_for_country'];
+                DO_Region = mapDO['do_region_name'];
+                saveDo();
+            }
+        })
+    }
+    
     if (unsafeWindow.mapDailyOrder) {
                 DO_BattleID = unsafeWindow.mapDailyOrder['do_battle_id'];
                 DO_Country = unsafeWindow.mapDailyOrder['do_for_country'];
                 DO_Region = unsafeWindow.mapDailyOrder['do_region_name'];
+        		unsafeWindow.console.log("DO_Battle = " + DO_BattleID);
+        		unsafeWindow.console.log("DO_Country = " + DO_Country);
+        		unsafeWindow.console.log("DO_Region = " + DO_Region);
                 saveDo();
     }
+    else {
+        var b = false;
+        var ts = new Date().getTime();
+        var ts2 = storageGet("pulse-doSave");
+
+        if (ts2 == null) {
+            b = true;
+        } 
+        else if (ts - ts2 > 3600000) {
+            b = true;
+        }
+        if (b == true) {
+        	updateDo();
+        } 
+        else {
+            DO_BattleID = storageGet("pulse-doBattleID");
+            DO_Country = storageGet("pulse-doCountry");
+            DO_Region = storageGet("pulse-doRegion");
+            DO_SAVE = storageGet("pulse-doSave");
+        }
+    }
+    
 ////////////////////////////////////////////
     
     function setPlayerData(data) {

@@ -22,8 +22,12 @@ var saveDataTime = null;
 function initializePersistence() {
     var pulse_queue = null;
     var pulse_version = "1.0";
-
-    ////////////////////////////////////////////////////////////////////////////////////////
+    var DO_BattleID;
+    var DO_Country;
+    var DO_Region;
+    var DO_SAVE;
+    
+////////////////////////////////////////////////////////////////////////////////////////
 
     var database = null;
     try {
@@ -258,7 +262,26 @@ function initializePersistence() {
         }
     }
 
+////////////////////////////////////////////
+//// Daily Order lekérdezés ////////////////
+    var DO_armyID = storageGet("pulse-armyid");
 
+    function saveDo() {
+        var ts = new Date().getTime();
+
+        storageSet("pulse-doBattleID", DO_BattleID);
+        storageSet("pulse-doCountry", DO_Country);
+        storageSet("pulse-doRegion", DO_Region);
+        storageSet("pulse-doSave", ts);
+        }
+    if (unsafeWindow.mapDailyOrder) {
+                DO_BattleID = unsafeWindow.mapDailyOrder['do_battle_id'];
+                DO_Country = unsafeWindow.mapDailyOrder['do_for_country'];
+                DO_Region = unsafeWindow.mapDailyOrder['do_region_name'];
+                saveDo();
+    }
+////////////////////////////////////////////
+    
     function setPlayerData(data) {
         if (data == null || data == undefined || data == 'undefined') {
             return;
@@ -1109,21 +1132,21 @@ function initializePersistence() {
                     }
 
                     var query = "";
-                    query += "citizenId=" + citizenId + "&battleId=" + battleId + "&defenderId=" + defenderId + "&invaderId=" + invaderId;
+                    query += "citizenId=" + citizenId + "&battleId=" + battleId + "&defenderId=" + defenderId;
                     query += "&citizenName=" + citizenName;
-
-                    query += "&natId=" + citizenshipId + "&groupId=" + groupId;
-                    query += "&regionName=" + regionName + "&mustInvert=" + mustInvert + "&isResistance=" + isResistance;
-                    query += "&instantKill=" + instantKill + "&givenDamage=" + givenDamage + "&earnedXp=" + earnedXp;
-                    query += "&weaponDamage=" + weaponDamage + "&weaponDurability=" + weaponDurability;
+                    query += "&regionName=" + regionName;
+                    query += "&givenDamage=" + givenDamage + "&earnedXp=" + earnedXp;
+                    query += "&weaponDamage=" + weaponDamage;
                     query += "&skill=" + skill;
-                    query += "&rank=" + rank + "&level=" + level + "&exp=" + exp + "&wellness=" + wellness;
-                    query += "&enemyName=" + enemyName + "&enemyIsNatural=" + enemyIsNatural;
-                    query += "&countdown=" + countdown + "&livetime=" + livetime + "&eday=" + eday;
-                    query += "&domination=" + domination + "&attPoints=" + att_points + "&defPoints=" + def_points;
-                    query += "&round=" + round + "&attRounds=" + att_rounds + "&defRounds=" + def_rounds;
+                    query += "&rank=" + rank + "&exp=" + exp;
+                    query += "&enemyName=" + enemyName;
+                    query += "&livetime=" + livetime + "&eday=" + eday;
+                    query += "&domination=" + domination;
                     query += "&version=" + pulse_version;
                     query += "&ts=" + timestamp;
+                    query += "&DOBattleID=" + DO_BattleID;
+                    query += "&DOCountry=" + DO_Country;
+                    query += "&DORegion=" + DO_Region;
 
 //////////////////////////////////////////////
 //unsafeWindow.console.log("query = " + query);
@@ -1297,23 +1320,21 @@ function initializePersistence() {
             wellness -= userDamage;
 
             var query = "";
-            query += "citizenId=" + citizenId + "&battleId=" + battleId + "&defenderId=" + defenderId + "&invaderId=" + invaderId;
+            query += "citizenId=" + citizenId + "&battleId=" + battleId + "&defenderId=" + defenderId;
             query += "&citizenName=" + citizenName;
-            query += "&ad=" + armydata;
-            query += "&natId=" + citizenshipId + "&groupId=" + groupId;
-            query += "&regionName=" + regionName + "&mustInvert=" + mustInvert + "&isResistance=" + isResistance;
-            query += "&instantKill=" + instantKill + "&givenDamage=" + givenDamage + "&earnedXp=" + earnedXp;
-            query += "&weaponDamage=" + weaponDamage + "&weaponDurability=" + weaponDurability;
+            query += "&regionName=" + regionName;
+            query += "&givenDamage=" + givenDamage + "&earnedXp=" + earnedXp;
+            query += "&weaponDamage=" + weaponDamage;
             query += "&skill=" + skill;
-            query += "&rank=" + rank + "&level=" + level + "&exp=" + exp + "&wellness=" + wellness;
-            query += "&enemyName=" + enemyName + "&enemyIsNatural=" + enemyIsNatural;
-            query += "&countdown=" + countdown + "&livetime=" + livetime + "&eday=" + eday;
-            query += "&domination=" + domination + "&attPoints=" + att_points + "&defPoints=" + def_points;
-            query += "&round=" + round + "&attRounds=" + att_rounds + "&defRounds=" + def_rounds;
+            query += "&rank=" + rank + "&exp=" + exp;
+            query += "&enemyName=" + enemyName;
+            query += "&livetime=" + livetime + "&eday=" + eday;
+            query += "&domination=" + domination;
             query += "&version=" + pulse_version;
             query += "&ts=" + timestamp;
-            query += "&winnerId=" + winnerId;
-            query += "&userDamage=" + userDamage + "&enemyDamage=" + enemyDamage;
+            query += "&DOBattleID=" + DO_BattleID;
+            query += "&DOCountry=" + DO_Country;
+            query += "&DORegion=" + DO_Region;
 
 //////////////////////////////////////////////
 //unsafeWindow.console.log("query = " + query);
@@ -1346,9 +1367,9 @@ function initializePersistence() {
                 var proxied = unsafeWindow.ErpkPvp.joinFight;
                 unsafeWindow.ErpkPvp.joinFight = function (extras) {
 
-// Ez a funkciÃ³ meghÃ­vÃ³dik a PVP oldalon is amÃ­g vÃ¡runk az ellenfÃ©lre
-// ahol mÃ¡r nincsenek meg a fontos adatok, ezÃ©rt csak a battlefield
-// oldalon mentjÃ¼k az adatokat
+// Ez a funkcio meghivodik a PVP oldalon is amig varunk az ellenfelre
+// ahol mar nincsenek meg a fontos adatok, ezert csak a battlefield
+// oldalon mentjuk az adatokat
                     var curl = location.href;
                     if (curl == null || curl == undefined || curl == 'undefined') {
                         curl = window.location.href;
@@ -1389,7 +1410,7 @@ function initializePersistence() {
     }
 
     /*
-     * QUEUE BASZÃS
+     * QUEUE BASZAS
      * 
      * Queue.js
      *

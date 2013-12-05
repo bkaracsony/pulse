@@ -298,9 +298,6 @@ function initializePersistence() {
                 DO_BattleID = unsafeWindow.mapDailyOrder['do_battle_id'];
                 DO_Country = unsafeWindow.mapDailyOrder['do_for_country'];
                 DO_Region = unsafeWindow.mapDailyOrder['do_region_name'];
-        		unsafeWindow.console.log("DO_Battle = " + DO_BattleID);
-        		unsafeWindow.console.log("DO_Country = " + DO_Country);
-        		unsafeWindow.console.log("DO_Region = " + DO_Region);
                 saveDo();
     }
     else {

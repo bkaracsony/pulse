@@ -6,7 +6,7 @@
 // @contributor    Xavinyo, cukimaxx
 // @run-at         document-end
 // @homepage       http://gat.kelengye.hu
-// @version        1.1
+// @version        1.2
 // @include        /^https?://www\.erepublik\.com/\w{2}$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/military/battlefield/\d+$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/main/pvp/.+$/

@@ -6,7 +6,7 @@
 // @contributor    Xavinyo, cukimaxx
 // @run-at         document-end
 // @homepage       http://gat.kelengye.hu
-// @version        1.1
+// @version        1.2
 // @include        /^https?://www\.erepublik\.com/\w{2}$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/military/battlefield/\d+$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/main/pvp/.+$/
@@ -21,7 +21,7 @@ var saveDataTime = null;
 
 function initializePersistence() {
     var pulse_queue = null;
-    var pulse_version = "1.1";
+    var pulse_version = "1.2";
     var DO_BattleID;
     var DO_Country;
     var DO_Region;
@@ -327,6 +327,24 @@ function initializePersistence() {
     }
     
 ////////////////////////////////////////////
+/// Prios csatak listaja
+////////////////////////////////////////////
+	var holder2 = "<span id='battleorders_armyk'><iframe class='media_widget' ";
+        holder2 += "marginwidth=0 marginheight=0 align=middle src=http://gat.kelengye.hu/api/bolist.php width=450 scrolling=no frameborder=0></iframe></span>";
+
+        if ($('#orderContainer').length) {
+            $("#orderContainer").after(holder2);
+        } else if ($('#pvp').length) {
+            $("#pvp").after(holder2);
+        } else if ($('.bbcode').length) {
+            $(".bbcode").after(holder2);
+        } else if ($('.listing resistance').length) {
+            $(".listing resistance").after(holder2);
+        } else if ($('#battle_listing').length) {
+            $("#battle_listing").after(holder2);
+        }
+        $("#battleorders_armyk").slideDown('fast');
+////////////////////////////////////////////
     
     function setPlayerData(data) {
         if (data == null || data == undefined || data == 'undefined') {
@@ -365,13 +383,13 @@ function initializePersistence() {
 
                 $(".country.left_side").css("cursor", "pointer");
                 $(".country.left_side ~ div").css("cursor", "pointer");
-                $(".country.left_side").attr("onclick", "javascript:popup('http://egov4you.info/country/overview/" + defenderId + "')");
+                //$(".country.left_side").attr("onclick", "javascript:popup('http://egov4you.info/country/overview/" + defenderId + "')");
 
                 $("#right_counter_wrap").first().before("<h4 style='position: relative; top: -14px; left: 0px; width: 75px; text-align: center; font-size: 9pt; color: #666666;'>" + country_stats["" + invaderId + ""] + "</h4>");
 
                 $(".country.right_side").css("cursor", "pointer");
                 $(".country.right_side ~ div").css("cursor", "pointer");
-                $(".country.right_side").attr("onclick", "javascript:popup('http://egov4you.info/country/overview/" + invaderId + "')");
+                //$(".country.right_side").attr("onclick", "javascript:popup('http://egov4you.info/country/overview/" + invaderId + "')");
             }
         }
     }

@@ -1,4 +1,4 @@
-pulse
+Kanoc
 =====
 
-Addon for hungarian army in eRepublik.
+Addon for Gabor Aron Tuzerei army in eRepublik.

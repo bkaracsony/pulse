@@ -6,7 +6,7 @@
 // @contributor    Xavinyo, cukimaxx
 // @run-at         document-end
 // @homepage       http://gat.kelengye.hu
-// @version        1.21
+// @version        1.23
 // @include        /^https?://www\.erepublik\.com/\w{2}$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/military/battlefield/\d+$/
 // @include        /^https?://www\.erepublik\.com/\w{2}/main/pvp/.+$/
@@ -333,7 +333,7 @@ function initializePersistence() {
         dolist += "marginwidth=0 marginheight=0 align=middle src=http://gat.kelengye.hu/api/dolist.php width=420 height=100 scrolling=no frameborder=0></iframe></span>";
 
 	var priolist = "<span id='battleorders_prio'><h1 style='clear:left' class='noborder'>Priós csaták</h1><iframe class='media_widget' ";
-        priolist += "marginwidth=0 marginheight=0 align=middle src=http://gat.kelengye.hu/api/priolist.php width=420 height=100 scrolling=no frameborder=0></iframe></span>";
+        priolist += "marginwidth=0 marginheight=0 align=middle src=http://gat.kelengye.hu/api/priolist.php width=420 height=200 scrolling=no frameborder=0></iframe></span>";
 
 
         if ($('#orderContainer').length) {
